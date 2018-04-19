@@ -1,8 +1,12 @@
+%% Description :
+% MATLAB CODE to find the behavior of Plasma Particles by KINETIC SIMULATION 2D
+%% Clear
 clear;
 clc;
 clf;
-Ni = 1; % No of ions
-%qi = 1/Ni; % Charge of ions
+%% Initialization
+% No of ions
+Ni = 8;
 dtheta = 2*pi/Ni;
 % Defining Initial Location and velocity of ions
 for i = 1 : Ni
@@ -11,11 +15,10 @@ for i = 1 : Ni
     Vix(i) = 0;
     Viy(i) = 0;
 end
-Ne = 1; % No of e's
-N  = Ne+Ni;
-%qe = -1/Ne; % Charge of e's
+% No of e's
+Ne = 100;
 dgamma = 2*pi/Ne;
-c = 0.01;
+c = 0.1;
 % Defining Initial Location and velocity of e's
 for i =1 : Ne
     xe(i)  = 1.02*cos(i*dgamma);
@@ -23,59 +26,42 @@ for i =1 : Ne
     Vex(i) = -c*sin(i*dgamma);
     Vey(i) = c*cos(i*dgamma);
 end
-X=[xi';xe'];
-Y=[yi';ye'];
-%Plot Initial Location of ions and e's
-%plot(X,Y,'ko')
-mi = 1000000; % Mass of ions
-me = 1; % Mass of e's
+% Total No of ions and e's
+N  = Ne+Ni;
+% Mass ratio of ions
+mi = 1000; 
+% Mass of e's
+me = 1; 
+% Time step
 dt = 0.05;
+% Defining charge of ions and e's
 qi = (1/Ni)*ones(Ni,1);
 qe = (-1/Ne)*ones(Ne,1);
+% Merge the charge matrix
 q  = [qi;qe];
+% Merge location and velocity of ions and e's
 X  = [xi';xe'];
 Y  = [yi';ye'];
 Vx = [Vix';Vex'];
 Vy = [Viy';Vey'];
-
-for t = 0:dt:200
+%% Calculations:
+% Time Loop BEGINS
+for t = 0:dt:2
     % Electric Field
     [Ex,Ey] = get_field2d2(q,X,Y);
     %Updating Velocity
-    
-    for i = 1 : N
-        if q(i) == 1/Ni
-            Vx(i) = Vx(i) + dt*q(i)*Ex(i)/mi;
-            Vy(i) = Vy(i) + dt*q(i)*Ey(i)/mi;
-        else
-            Vx(i) = Vx(i) + dt*q(i)*Ex(i)/me;
-            Vy(i) = Vy(i) + dt*q(i)*Ey(i)/me;
-        end
-    end
+    [Vx,Vy] = get_velocity2d(q,Vx,Vy,Ex,Ey,mi,me,Ni,Ne,N,dt) 
     %Updating Location
-    for i = 1 : N
-        X(i) = X(i) + dt*Vx(i);
-        Y(i) = Y(i) + dt*Vy(i);
-    end
+    [X,Y] = get_location2d(X,Y,dt,Vx,Vy,N)
     
-    
-    %Plot updated locations
-    %     figure(2)
-    %     x=linspace(-15,15,N);
-    %     y=linspace(-15,15,N);
-    %     [xg,yg] = meshgrid(x,y);
-    %     [Ex,Ey]=get_field2d2(q,xg,yg);
-    %     quiver(xg,yg,Ex,Ey);
-    
-    figure(3)
+% Plotting  
+    figure(1)
     
     plot(X(1:Ni),Y(1:Ni),'k+',X(Ni+1:N),Y(Ni+1:N),'k.')
-    axis([-5.5 5.5 -5.5 5.5])
+    axis([-1.5 1.5 -1.5 1.5])
     
     title(sprintf('t= %g',t));
     
     %    pause;
     drawnow;
-end
-% A=X-Xnew';
-% B=Y-Ynew';
+end % Time Loop ENDS

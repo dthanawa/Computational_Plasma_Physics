@@ -1,7 +1,7 @@
 function [Ex,Ey] = get_field2d2(q,X,Y)
 N=length(q);
-%Ex=zeros(N,1);
-%Ey=zeros(N,1);
+Ex=zeros(N,1);
+Ey=zeros(N,1);
 
 d = 1e-1;
     for i= 1:N
