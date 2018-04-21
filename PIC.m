@@ -36,5 +36,15 @@ for i = 1:N
     w(i,1) = hx(i,1)/(hx(i,1)+hx(i,2));
     w(i,2) = 1-w(i,1);
 end
+% qi = ones(N/2,1);
+% qe = -1*ones(N/2,1);
+% q  = [qi;qe];
+q = 2*rand(N,1) -1;
+qn = zeros(length(node),1);
 
+    for j = 1:N
+        n(j) = ceil(X(j)/dn);
+        qn(n(j)) = qn(n(j)) +  w(j,2)*q(j);
+        qn(n(j)+1) = qn(n(j)+1) +  w(j,1)*q(j);
+    end
 
