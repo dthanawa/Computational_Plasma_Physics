@@ -6,7 +6,7 @@ a(1,1)=-2;
 a(1,2)=1;
 
 %qn = [0.9709 0.9700 -0.8598 -0.7899 -0.0261];
-e0 = (8.85e-12);
+e0 = 8.85;
 f(1)=qn(2)/e0;
 
 for i=2:n
@@ -15,7 +15,7 @@ for i=2:n
     a(i,i+1)=1;
     f(i)=qn(i+1)/e0;
 end
-a = a(1:3,1:3);
+a = a(1:n,1:n);
 % a(nf,nf-1)=lr
 % a(nf,nf+1)=vs*k
 % a(nf,nf)=-(Ls+vr*k)
@@ -33,8 +33,8 @@ alfa(1)=a(1,1);
 bet(1)=f(1)/a(1,1);
  
 for i=2:n
-    alfa(i)=a(i,i)-a(i,i-1)*a(i-1,i)/alfa(i-1);
-    bet(i)=(f(i)-a(i,i-1)*bet(i-1))/alfa(i);
+    alfa(i) = a(i,i)-a(i,i-1)*a(i-1,i)/alfa(i-1);
+    bet(i) = (f(i)-a(i,i-1)*bet(i-1))/alfa(i);
 end
 x(n)=bet(n);
 % disp(x(n));

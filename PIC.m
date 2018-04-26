@@ -23,10 +23,10 @@ end
 
 V = [vi';ve'];
 X = [xi';xe'];  
-node = linspace(0,1,5);
+node = linspace(0,1,10);
 l = length(node);
 dn = node(2)-node(1);
-dt = 1e-12;
+dt = 5e-4;
 for t = 0:dt:1.5
 for i = 1:N
     n(i) = ceil(X(i)/dn);
@@ -38,10 +38,12 @@ for i = 1:N
     w(i,1) = hx(i,1)/(hx(i,1)+hx(i,2));
     w(i,2) = 1-w(i,1);
 end
-qi = ones(N/2,1);
-qe = -1*ones(N/2,1);
- q  = [qi;qe];
- q = 2*rand(N,1) -1;
+i = 1:N/2;
+q(i) = 1*rand + 1;
+i = N/2 + 1 : N;
+q(i) = 1*rand -1;
+%  q  = [qi;qe];
+%  q = 2*rand(N,1) -1;
  qn = zeros(l,1);
 
     for j = 1:N
@@ -59,12 +61,12 @@ phi = Phi;
 
 E = get_field_pic(phi,dn,l)
 mi=1000;
-me=1
+me=1;
 for i = 1 : N
     Ex(i) = interp1(node,E,X(i),'linear');
 end
 for i = 1 : N
-    if q(i)>=1
+    if q(i)>0
         Vnew(i) = V(i) + dt*q(i)*Ex(i)/mi;
     else
         Vnew(i) = V(i) + dt*q(i)*Ex(i)/me;
@@ -74,8 +76,8 @@ end
 for i = 1 : N
         Xnew(i) = X(i) + dt*Vnew(i);
 end
-    X=mod(Xnew,1);
-    V=Vnew;
+    X = mod(Xnew,1);
+    V = Vnew;
     figure(2)
     plot(X,V,'ko');
     %axis([0 1 -2 2]);
