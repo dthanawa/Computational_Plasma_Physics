@@ -3,7 +3,7 @@
 #include<math.h>
 #include <time.h>
 #define PI (3.141592653589793)
-float * get_phi((float) qn[5],(int) num_node);
+float get_phi(float* qn5,int num_node);
 
 int main()
 {
@@ -11,7 +11,7 @@ int main()
      N = Ni + Ne;
      float dxe,dxi,m=1.0,node[5]={ 0.0 },k=0.0;
      float xi[16] = { 0.0 },xe[16] = { 0.0 },vi[16] = { 0.0 },ve[16] = { 0.0 },X[16] = { 0.0 },V[16] = { 0.0 };
-     float hx[16][2] = { 0.0 },n[16]={ 0.0 },w[16][2] = { 0.0 },q[16] = { 0.0 },qn[5] = { 0.0 },*phi;
+     float hx[16][2] = { 0.0 },n[16]={ 0.0 },w[16][2] = { 0.0 },q[16] = { 0.0 },qn[5] = { 0.0 }, *phi;
      srand((unsigned int)time(NULL));
      float r = 2;
      dxe = 2.0/Ne;
@@ -85,11 +85,12 @@ int main()
         {
             printf("qn = %.5f \n",qn[i]);
         }
-        phi = get_phi((float) qn[5],(int) num_node);
+        get_phi((float*) qn,(int) num_node);
+
     return 0;
 }
 
-float * get_phi((float) qn[5],(int) num_node)
+float get_phi(float* qn,int num_node)
 {
     int n,i;
     float e0 = 8.85;
@@ -120,8 +121,7 @@ float * get_phi((float) qn[5],(int) num_node)
     }
     
     
-    return x;
+    return* x;
 
 }
-
 
