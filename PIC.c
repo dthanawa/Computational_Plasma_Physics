@@ -92,7 +92,7 @@ int main()
 
 float get_phi(float* qn,int num_node)
 {
-    int n,i;
+    int n,i,j;
     float e0 = 8.85;
     n = num_node-2;
     float a[3][3] = { 0.0 }, f[3] = { 0.0 }, alfa[3] = { 0.0 }, bet[3] = { 0.0 },x[3] = { 0.0 };
@@ -101,27 +101,40 @@ float get_phi(float* qn,int num_node)
     f[0]=qn[1]/e0;
     
     for(i=1;i<n;i++)
-    {
-        a[i][i-1]=1;
-        a[i][i]=-2;
-        a[i][i+1]=1;
-        f[i]=qn[i+1]/e0; 
-    }
-    alfa[0]=a[0][0];
-    bet[0]=f[0]/a[1][1];
+        {
+            a[i][i-1] = 1;
+            a[i][i]   = -2;
+            if(i!=n-1)
+            a[i][i+1] = 1;
+            f[i] = qn[i+1]/e0; 
+        }
+    for(i=0;i<n;i++)
+        {
+            for(j=0;j<n;j++)
+                {
+                    printf("%.5f ",a[i][j]);
+                }
+        
+            printf("\n");
+        }
+        
+    alfa[0] = a[0][0];
+    bet[0]  = f[0]/a[0][0];
     for(i=1;i<n;i++)
     {
-        alfa[i] = a[i][i]-a[i][i-1]*a[i-1][i]/alfa[i-1];
-        bet[i] = (f[i]-a[i][i-1]*bet[i-1])/alfa[i];
+        alfa[i] = a[i][i] - (a[i][i-1])*a[i-1][i]/alfa[i-1];
+        bet[i] = (f[i] - (a[i][i-1])*bet[i-1])/alfa[i];
     }
-    x[n-1]=bet[n-1];
-    for(i=n-2;i>=0;i--)
+    x[n-1] = bet[n-1];
+    for(i = n-2; i >= 0; i--)
     {
-        x[i]=bet[i]-a[i][i+1]*x[i+1]/alfa[i];
+        x[i] = bet[i]-(a[i][i+1])*x[i+1]/alfa[i];
     }
-    
-    
+     for(i = 0;i<3;i++)
+     printf("%f\n",x[i]);
+     
     return* x;
 
 }
+
 

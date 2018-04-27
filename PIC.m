@@ -1,13 +1,14 @@
 %% Clear
 clear;
 clc;
-clf;
+
 %% Initialization of variables
-Ne = 40000;
-Ni = 1000;
+Ne = 4000;
+Ni = 100;
 N = Ne + Ni;
 dxe = 2/Ne;
 dxi = 1/Ni;
+num_node = 100;
 %% Initial Velocity and location
 for i=1:Ni
     xi(i) = (i-0.5)*dxi;
@@ -26,8 +27,9 @@ end
 
 V = [vi';ve'];
 X = [xi';xe'];
+
 %% Defining node
-node = linspace(0,1,100);
+node = linspace(0,1,num_node);
 l = length(node);
 dn = node(2)-node(1);
 dt = 5e-4;
