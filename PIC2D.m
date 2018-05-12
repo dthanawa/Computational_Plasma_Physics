@@ -1,6 +1,6 @@
 clear;
 clc;
-Ni = 8;
+Ni = 6;
 dtheta = 2*pi/Ni;
 for i = 1 : Ni
     xi(i)  = cos(i*dtheta);
@@ -9,13 +9,13 @@ for i = 1 : Ni
     Viy(i) = 0;
 end
 % No of e's
-Ne = 100;
+Ne = 6;
 dgamma = 2*pi/Ne;
 c = 0.1;
 % Defining Initial Location and velocity of e's
 for i =1 : Ne
-    xe(i)  = 1.02*cos(i*dgamma);
-    ye(i)  = 1.02*sin(i*dgamma);
+    xe(i)  = 1.0*cos(i*dgamma);
+    ye(i)  = 1.0*sin(i*dgamma);
     Vex(i) = -c*sin(i*dgamma);
     Vey(i) = c*cos(i*dgamma);
 end
@@ -27,22 +27,18 @@ mi = 1000;
 me = 1; 
 % Time step
 dt = 0.005;
-% Defining charge of ions and e's
-qi = (1/Ni)*ones(Ni,1);
-qe = (-1/Ne)*ones(Ne,1);
-% Merge the charge matrix
-q  = [qi;qe];
 % Merge location and velocity of ions and e's
 X  = [xi';xe'];
 Y  = [yi';ye'];
 Vx = [Vix';Vex'];
 Vy = [Viy';Vey'];
 
-num_nodex = 3;
-num_nodey = 3;
-
-m = linspace(0,1,num_nodex);
-n = linspace(0,1,num_nodex);
+num_nodex = 4;
+num_nodey = 4;
+ax = -1.5; bx = 1.5;
+ay = -1.5; by = 1.5;
+m = linspace(ax,bx,num_nodex);
+n = linspace(ay,by,num_nodex);
 dm = m(2)-m(1);
 dn = n(2)-n(1);
 for i = 1 : num_nodex
@@ -51,22 +47,19 @@ for i = 1 : num_nodex
         nodeY(i,j) = n(j);
     end
 end
+qn = zeros(num_nodex,num_nodey);
+for p = 1 : N
+    fi = 1 + X(p)/dn
+    %i = floor(fi)
+    i = floor((X(p) - ax)/(bx-ax)*(num_nodex-1)+1)
+    hx = fi - i;
+    fj = 1 + Y(p)/dm;
+    j = floor((Y(p) - ay)/(by-ay)*(num_nodey-1)+1);
+    hy = fj - j;
+    qn(i,j) = qn(i,j) + (1-hx)*(1-hy);
+    qn(i+1,j) = qn(i+1,j) + (hx)*(1-hy);
+    qn(i,j+1) = qn(i,j+1) + (1-hx)*(hy);
+    qn(i+1,j+1) = qn(i+1,j+1) + (hx)*(hy);
+end
 
- for i = 1:N
-        Xc(i) = ceil(X(i)/dm);
-        hx(i,1) =  X(i) - (Xc(i)-1)*dm;
-        %hx(i,2) = Xc(i)*dm - X(i);
- end
-for i = 1:N
-    Yc(i) = ceil(X(i)/dn);
-    hy(i,1) =  X(i) - (Yc(i)-1)*dn;
-    %hy(i,2) = Yc(i)*dn - X(i);
-end
-h = [hx hy]; 
-for i = 1:N
-        w(i,1) = hx(i,1)*hy(i,1);
-        w(i,2) = (1-hx(i,1))*hy(i,1);
-        w(i,3) = (1-hx(i,1))*(1-hy(i,1));
-        w(i,4) = hx(i,1)*(1-hy(i,1));
-end
 
