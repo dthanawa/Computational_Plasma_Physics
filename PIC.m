@@ -3,12 +3,12 @@ clear;
 clc;
 
 %% Initialization of variables
-Ne = 4000;
-Ni = 100;
+Ne = 1008;
+Ni = 18;
 N = Ne + Ni;
 dxe = 2/Ne;
 dxi = 1/Ni;
-num_node = 100;
+
 %% Initial Velocity and location
 for i=1:Ni
     xi(i) = (i-0.5)*dxi;
@@ -29,7 +29,9 @@ V = [vi';ve'];
 X = [xi';xe'];
 
 %% Defining node
-node = linspace(0,1,num_node);
+a = 0; b = 1;
+num_node = 100;
+node = linspace(a,b,num_node);
 l = length(node);
 dn = node(2)-node(1);
 dt = 5e-4;
@@ -37,7 +39,7 @@ dt = 5e-4;
 for t = 0:dt:1.5
     % Calculating hx
     for i = 1:N
-        n(i) = ceil(X(i)/dn);
+        n(i) = floor((X(i) - a)/(b-a)*(l-1)+1);
         hx(i,1) =  X(i) - (n(i)-1)*dn;
         hx(i,2) = n(i)*dn - X(i);
     end
@@ -56,7 +58,8 @@ for t = 0:dt:1.5
     % Compute charge density
     qn = zeros(l,1);
     for j = 1:N
-        n(j) = ceil(X(j)/dn);
+        %n(j) = ceil(X(j)/dn);
+        n(j) = floor((X(j) - a)/(b-a)*(l-1)+1);
         qn(n(j)) = qn(n(j)) +  w(j,2)*q(j);
         qn(n(j)+1) = qn(n(j)+1) +  w(j,1)*q(j);
     end
