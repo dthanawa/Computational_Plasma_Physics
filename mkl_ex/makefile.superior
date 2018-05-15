@@ -1,0 +1,4 @@
+all: mkl_trial.exe
+
+mkl_trial.exe:
+	icc -I${MKLROOT}/include -L${MKLROOT}/lib/intel64 -lmkl_intel_lp64 -lmkl_core -lmkl_sequential -lpthread  trial.c -o mkl_trial.exe -std=c99 -lm

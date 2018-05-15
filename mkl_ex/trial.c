@@ -1,4 +1,4 @@
-Intel® Math Kernel Library LAPACK Examples
+//Intel® Math Kernel Library LAPACK Examples
 
 /*******************************************************************************
 *  Copyright (C) 2009-2015 Intel Corporation. All Rights Reserved.
