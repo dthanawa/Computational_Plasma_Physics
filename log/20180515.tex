@@ -1,0 +1,102 @@
+\documentclass[12pt]{article}
+% copy this template file to weekxx.tex, e.g.m for week 1, week01.tex
+% and edit the new file.
+
+\usepackage{amssymb,amsthm,amsmath,amsfonts}
+\usepackage{fullpage}
+\usepackage{todonotes}
+
+\usepackage[parfill]{parskip}
+
+\title{Computational Plasma Physics}
+\author{Dhruv}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\subsubsection*{Pre--Meeting Logbook}
+\begin{enumerate}
+\item What were the objectives for this week?
+
+  \begin{itemize}
+  \item (Copy from previous notebook)
+  \end{itemize}
+
+\item What were (are) the difficulties/obstacles you faced (are
+  facing)?
+
+  \begin{itemize}
+  \item
+  \end{itemize}
+
+
+\item How would you quantify your progress (in terms of a percentage)?
+
+  \begin{itemize}
+  \item {\em  xx \%}
+  \end{itemize}
+
+\item What questions developed this week?
+
+    \begin{itemize}
+    \item
+    \end{itemize}
+
+\item What do you anticipate working on by friday?
+
+  \begin{itemize}
+  \item (ideal: 30 min) compiling example using math library for
+    linear solve in C
+  \item (ideal: 30 min) finish complete PIC 1D, using linear solve,
+    math library in C.
+  \item (ideal: 1 hour) learn lexographical ordering for solving for
+    potential on grid in 2D
+  \item (ideal 2 hours) generate coefficient matrix and solve for
+    potential in 2d (matlab)
+  \item (ideal 2 hours) finish reading treecode paper.  come armed
+    with questions or summary.
+  \item (ideal 3 hours) start summary of treecode in overleaf report
+  \item (ideal 1 hours) knock of at least one todo in the overleaf
+    report.
+  \item start treecode in matlab, 1D
+    \begin{itemize}
+    \item (15 minutes) initalization of simulation.  one single
+      particle at location (0,0), ten particles clustered around
+      location (1,0).
+    \item (1 hour): write function that takes derivatives of
+      regularized potential
+      \begin{align*}
+        G^\epsilon = \frac{1}2{}\sqrt{(x-x_j)^2 + \epsilon^2}
+      \end{align*}
+    \item (10 minutes): 0th order treecode approx, assuming all
+      particles clustered around (1,0) are a cluster.
+    \item (2 hours): 1st order treecode approx, assuming all
+      particles clustered around (1,0) are a cluster.
+    \item (30 minutes): 2nd order treecode approx, assuming all
+      particles clustered around (1,0) are a cluster.
+    \end{itemize}
+  \item if you have time: start generating coefficient matrix for C
+  \end{itemize}
+
+
+\end{enumerate}
+
+\subsubsection*{Post--Meeting Logbook}
+\begin{enumerate}
+\item Recap of today's research meeting
+
+  \begin{itemize}
+  \item
+  \end{itemize}
+
+\item What will you work on this coming week?
+
+  \begin{itemize}
+  \item
+  \end{itemize}
+
+
+\end{enumerate}
+
+\end{document}
