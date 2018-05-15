@@ -29,7 +29,7 @@ int main()
     int num_node = 5, p = 5;
 
     int i, j;    
-    float t;
+    float t, a = 0.0, b = 1.0;
     float dxe, dxi, m = 1.0, node['p'] = { 0.0 }, k = 0.0, mi = 1000.0, me = 1.0;
     
     // Memory Preallocation for Velocity, postion, weight fraction, Charge density and Electric Potential
@@ -93,7 +93,8 @@ int main()
             // Calculating hx and Weight fraction
             for(i = 0;i<N;i++)
                 {
-                    n[i] = ceil(X[i]/dn);
+                    //n[i] = ceil(X[i]/dn);
+                    n[i] = floor((X[i] - a)/(b-a)*(num_node - 1)+1);
                     hx[i][1] =  X[i] - (n[i]-1.0)*dn;
                     hx[i][2] = n[i]*dn - X[i];
                     printf("n = %.5f hx = %.5f  %.5f\n",n[i],hx[i][1],hx[i][2]);
@@ -178,7 +179,7 @@ int main()
     return 0;
 }
 
-// Electric Potential Function with Tri Diagonal Matrix Algorithm Method
+// Electric Potential Function
 float get_phi(float qn[],int num_node)
 {
     int n, i, j;
@@ -225,8 +226,6 @@ float get_phi(float qn[],int num_node)
     
     return 0;
 }
-
-// Electric Field Function
 float get_field_pic(float phi[],int p,float dn)
 {
     int i;
@@ -240,7 +239,6 @@ float get_field_pic(float phi[],int p,float dn)
     return 0;
 }
 
-// Linear Interpolation Function
 float interp_linear( float X[], float E[], float dn, int p, int N,float n[] )
 {
     int k=p-1,i;
@@ -253,6 +251,7 @@ float interp_linear( float X[], float E[], float dn, int p, int N,float n[] )
         Ex[i] = X[i]*slope[(int)(n[i]-1)];
     return 0;
 }
+
 
 
 
