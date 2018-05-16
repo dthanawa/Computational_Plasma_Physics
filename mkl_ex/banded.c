@@ -1,78 +1,175 @@
-//Intel® Math Kernel Library LAPACK Examples
-
-/*******************************************************************************
-*  Copyright (C) 2009-2015 Intel Corporation. All Rights Reserved.
-*  The information and material ("Material") provided below is owned by Intel
-*  Corporation or its suppliers or licensors, and title to such Material remains
-*  with Intel Corporation or its suppliers or licensors. The Material contains
-*  proprietary information of Intel or its suppliers and licensors. The Material
-*  is protected by worldwide copyright laws and treaty provisions. No part of
-*  the Material may be copied, reproduced, published, uploaded, posted,
-*  transmitted, or distributed in any way without Intel's prior express written
-*  permission. No license under any patent, copyright or other intellectual
-*  property rights in the Material is granted to or conferred upon you, either
-*  expressly, by implication, inducement, estoppel or otherwise. Any license
-*  under such intellectual property rights must be express and approved by Intel
-*  in writing.
-*
-********************************************************************************
-*/
 /*
-   LAPACKE_dgesv Example.
+   LAPACKE_dgbtrs Example.
    ======================
  
-   The program computes the solution to the system of linear
-   equations with a square matrix A and multiple
+*  DGBTRS solves a system of linear equations
+*     A * X = B  or  A' * X = B
+*  with a general band matrix A using the LU factorization computed
+*  by DGBTRF.
+*
+*  Arguments
+*  =========
+*
+*  TRANS   (input) CHARACTER*1
+*          Specifies the form of the system of equations.
+*          = 'N':  A * X = B  (No transpose)
+*          = 'T':  A'* X = B  (Transpose)
+*          = 'C':  A'* X = B  (Conjugate transpose = Transpose)
+*
+*  N       (input) INTEGER
+*          The order of the matrix A.  N >= 0.
+*
+*  KL      (input) INTEGER
+*          The number of subdiagonals within the band of A.  KL >= 0.
+*
+*  KU      (input) INTEGER
+*          The number of superdiagonals within the band of A.  KU >= 0.
+*
+*  NRHS    (input) INTEGER
+*          The number of right hand sides, i.e., the number of columns
+*          of the matrix B.  NRHS >= 0.
+*
+*  AB      (input) DOUBLE PRECISION array, dimension (LDAB,N)
+*          Details of the LU factorization of the band matrix A, as
+*          computed by DGBTRF.  U is stored as an upper triangular band
+*          matrix with KL+KU superdiagonals in rows 1 to KL+KU+1, and
+*          the multipliers used during the factorization are stored in
+*          rows KL+KU+2 to 2*KL+KU+1.
+*
+*  LDAB    (input) INTEGER
+*          The leading dimension of the array AB.  LDAB >= 2*KL+KU+1.
+*
+*  IPIV    (input) INTEGER array, dimension (N)
+*          The pivot indices; for 1 <= i <= N, row i of the matrix was
+*          interchanged with row IPIV(i).
+*
+*  B       (input/output) DOUBLE PRECISION array, dimension (LDB,NRHS)
+*          On entry, the right hand side matrix B.
+*          On exit, the solution matrix X.
+*
+*  LDB     (input) INTEGER
+*          The leading dimension of the array B.  LDB >= max(1,N).
+*
+*  INFO    (output) INTEGER
+*          = 0:  successful exit
+*          < 0: if INFO = -i, the i-th argument had an illegal value
+*
+
+
+*  -- LAPACK routine (version 3.1) --
+*     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+*     November 2006
+*
+*     .. Scalar Arguments ..
+      INTEGER            INFO, KL, KU, LDAB, M, N
+*     ..
+*     .. Array Arguments ..
+      INTEGER            IPIV( * )
+      DOUBLE PRECISION   AB( LDAB, * )
+*     ..
+*
+*  Purpose
+*  =======
+*
+*  DGBTRF computes an LU factorization of a real m-by-n band matrix A
+*  using partial pivoting with row interchanges.
+*
+*  This is the blocked version of the algorithm, calling Level 3 BLAS.
+*
+*  Arguments
+*  =========
+*
+*  M       (input) INTEGER
+*          The number of rows of the matrix A.  M >= 0.
+*
+*  N       (input) INTEGER
+*          The number of columns of the matrix A.  N >= 0.
+*
+*  KL      (input) INTEGER
+*          The number of subdiagonals within the band of A.  KL >= 0.
+*
+*  KU      (input) INTEGER
+*          The number of superdiagonals within the band of A.  KU >= 0.
+*
+*  AB      (input/output) DOUBLE PRECISION array, dimension (LDAB,N)
+*          On entry, the matrix A in band storage, in rows KL+1 to
+*          2*KL+KU+1; rows 1 to KL of the array need not be set.
+*          The j-th column of A is stored in the j-th column of the
+*          array AB as follows:
+*          AB(kl+ku+1+i-j,j) = A(i,j) for max(1,j-ku)<=i<=min(m,j+kl)
+*
+*          On exit, details of the factorization: U is stored as an
+*          upper triangular band matrix with KL+KU superdiagonals in
+*          rows 1 to KL+KU+1, and the multipliers used during the
+*          factorization are stored in rows KL+KU+2 to 2*KL+KU+1.
+*          See below for further details.
+*
+*  LDAB    (input) INTEGER
+*          The leading dimension of the array AB.  LDAB >= 2*KL+KU+1.
+*
+*  IPIV    (output) INTEGER array, dimension (min(M,N))
+*          The pivot indices; for 1 <= i <= min(M,N), row i of the
+*          matrix was interchanged with row IPIV(i).
+*
+*  INFO    (output) INTEGER
+*          = 0: successful exit
+*          < 0: if INFO = -i, the i-th argument had an illegal value
+*          > 0: if INFO = +i, U(i,i) is exactly zero. The factorization
+*               has been completed, but the factor U is exactly
+*               singular, and division by zero will occur if it is used
+*               to solve a system of equations.
+*
+*  Further Details
+*  ===============
+*
+*  The band storage scheme is illustrated by the following example, when
+*  M = N = 6, KL = 2, KU = 1:
+*
+*  On entry:                       On exit:
+*
+*      *    *    *    +    +    +       *    *    *   u14  u25  u36
+*      *    *    +    +    +    +       *    *   u13  u24  u35  u46
+*      *   a12  a23  a34  a45  a56      *   u12  u23  u34  u45  u56
+*     a11  a22  a33  a44  a55  a66     u11  u22  u33  u44  u55  u66
+*     a21  a32  a43  a54  a65   *      m21  m32  m43  m54  m65   *
+*     a31  a42  a53  a64   *    *      m31  m42  m53  m64   *    *
+*
+*  Array elements marked * are not used by the routine; elements marked
+*  + need not be set on entry, but are required by the routine to store
+*  elements of U because of fill-in resulting from the row interchanges.
+*
+*  =====================================================================
+*
+
+
+   This test program computes the solution to the system of linear
+   equations with a square matrix A and one
    right-hand sides B, where A is the coefficient matrix:
  
-     6.80  -6.05  -0.45   8.32  -9.67
-    -2.11  -3.30   2.58   2.71  -5.14
-     5.66   5.36  -2.70   4.35  -7.26
-     5.97  -4.44   0.27  -7.17   6.08
-     8.23   1.08   9.04   2.14  -6.87
+A = [
+ 1.0 0   0   0   0 ;
+ -0.1 1.1 -0.2 0 0;
+  0  -0.1 1.2 0.1 0;
+  0  0    -0.2 1.3 -0.1
+  0 0 0 0 1];
 
-   and B is the right-hand side matrix:
+   and B is the right-hand side vector:
  
-     4.02  -1.56   9.81
-     6.19   4.00  -4.09
-    -8.22  -8.67  -4.57
-    -7.57   1.75  -8.61
-    -3.03   2.86   8.99
- 
-   Description.
-   ============
- 
-   The routine solves for X the system of linear equations A*X = B,
-   where A is an n-by-n matrix, the columns of matrix B are individual
-   right-hand sides, and the columns of X are the corresponding
-   solutions.
+1.0
+2.0
+3.0
+4.0
+5.0
 
-   The LU decomposition with partial pivoting and row interchanges is
-   used to factor A as A = P*L*U, where P is a permutation matrix, L
-   is unit lower triangular, and U is upper triangular. The factored
-   form of A is then used to solve the system of equations A*X = B.
+solution should be:
 
-   Example Program Results.
-   ========================
- 
- LAPACKE_dgesv (column-major, high-level) Example Program Results
+    1.0000
+    2.3411
+    2.3762
+    3.8271
+    5.0000
 
- Solution
-  -0.80  -0.39   0.96
-  -0.70  -0.55   0.22
-   0.59   0.84   1.90
-   1.32  -0.10   5.36
-   0.57   0.11   4.04
 
- Details of LU factorization
-   8.23   1.08   9.04   2.14  -6.87
-   0.83  -6.94  -7.92   6.55  -3.99
-   0.69  -0.67 -14.18   7.24  -5.19
-   0.73   0.75   0.02 -13.82  14.19
-  -0.26   0.44  -0.59  -0.34  -3.43
-
- Pivot indices
-      5      5      3      4      5
 */
 #include <stdlib.h>
 #include <stdio.h>
@@ -84,48 +181,59 @@ extern void print_int_vector( char* desc, MKL_INT n, MKL_INT* a );
 
 /* Parameters */
 #define N 5
-#define NRHS 3
+#define NRHS 1
 #define LDA N
 #define LDB N
+#define KL 1 // number of subdiagonals
+#define KU 1 // number of superdiagonals
 
 /* Main program */
 int main() {
-        /* Locals */
-        MKL_INT n = N, nrhs = NRHS, lda = LDA, ldb = LDB, info;
-        /* Local arrays */
-        MKL_INT ipiv[N];
-        double a[LDA*N] = {
-            6.80, -2.11,  5.66,  5.97,  8.23,
-           -6.05, -3.30,  5.36, -4.44,  1.08,
-           -0.45,  2.58, -2.70,  0.27,  9.04,
-            8.32,  2.71,  4.35, -7.17,  2.14,
-           -9.67, -5.14, -7.26,  6.08, -6.87
-        };
-        double b[LDB*NRHS] = {
-            4.02,  6.19, -8.22, -7.57, -3.03,
-           -1.56,  4.00, -8.67,  1.75,  2.86,
-            9.81, -4.09, -4.57, -8.61,  8.99
-        };
-        /* Executable statements */
-        printf( "LAPACKE_dgesv (column-major, high-level) Example Program Results\n" );
-        /* Solve the equations A*X = B */
-        info = LAPACKE_dgesv( LAPACK_COL_MAJOR, n, nrhs, a, lda, ipiv,
-                        b, ldb );
-        /* Check for the exact singularity */
-        if( info > 0 ) {
-                printf( "The diagonal element of the triangular factor of A,\n" );
-                printf( "U(%i,%i) is zero, so that A is singular;\n", info, info );
-                printf( "the solution could not be computed.\n" );
-                exit( 1 );
-        }
-        /* Print solution */
-        print_matrix( "Solution", n, nrhs, b, ldb );
-        /* Print details of LU factorization */
-        print_matrix( "Details of LU factorization", n, n, a, lda );
-        /* Print pivot indices */
-        print_int_vector( "Pivot indices", n, ipiv );
-        exit( 0 );
-} /* End of LAPACKE_dgesv Example */
+  
+  /* Locals */
+  MKL_INT n = N, nrhs = NRHS, lda = LDA, ldb = LDB, kl = KL, ku = KU, info;
+  
+  /* Local arrays */
+  MKL_INT ipiv[N];
+  
+  // note: label banded matrix ending with B.  storage is different.
+  double AB[(kl+ku+1)*N] = {
+    0, 1.0,-0.1,
+    0, 1.1, -0.1,
+    -0.2,1.2,-0.2,
+    0.1,1.3,0,
+    -0.1 1.0, 0};
+  
+  double b[LDB*NRHS] = {
+    1.0,2.0,3.0,4.0,5.0};
+  
+  /* Executable statements */
+
+  // factorizing banded matrix
+  printf("calling LAPACKE_dgetrf");
+  info = LAPACKE_dgetrf(n,n,kl,ku,AB,kl+ku+1,ipiv);
+  if( info > 0 ) {
+    printf( "factor U is singular, division by zero will occur\n");
+    printf( "the solution could not be computed.\n" );
+    exit( 1 );
+  }
+
+  // using factorization for linear solve
+  info = LAPACKE_dgbtrs('N',n,kl,ku,nrhs,AB,kl+ku+1,ipiv,b,ldb);
+  if( info < 0 ) {
+    printf( "illegal value\n");
+    exit(1);
+  }
+      
+  /* Print solution */
+  print_matrix( "Solution", n, nrhs, b, ldb );
+  /* Print details of LU factorization */
+  
+  /* Print pivot indices */
+  print_int_vector( "Pivot indices", n, ipiv );
+  exit( 0 );
+
+} /* End of LAPACKE_dgbtrs Example */
 
 /* Auxiliary routine: printing a matrix */
 void print_matrix( char* desc, MKL_INT m, MKL_INT n, double* a, MKL_INT lda ) {
