@@ -49,9 +49,9 @@ for i = 1 : num_nodex
 end
 qn = zeros(num_nodex,num_nodey);
 for p = 1 : N
-    fi = 1 + X(p)/dn
+    fi = 1 + X(p)/dn;
     %i = floor(fi)
-    i = floor((X(p) - ax)/(bx-ax)*(num_nodex-1)+1)
+    i = floor((X(p) - ax)/(bx-ax)*(num_nodex-1)+1);
     hx = fi - i;
     fj = 1 + Y(p)/dm;
     j = floor((Y(p) - ay)/(by-ay)*(num_nodey-1)+1);
@@ -61,5 +61,5 @@ for p = 1 : N
     qn(i,j+1) = qn(i,j+1) + (1-hx)*(hy);
     qn(i+1,j+1) = qn(i+1,j+1) + (hx)*(hy);
 end
-
+phi = get_phi2D(qn,num_nodex,num_nodey)
 
