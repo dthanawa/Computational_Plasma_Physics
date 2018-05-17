@@ -3,8 +3,8 @@ clear;
 clc;
 
 %% Initialization of variables
-Ne = 1008;
-Ni = 18;
+Ne = 1000;
+Ni = 1000;
 N = Ne + Ni;
 dxe = 2/Ne;
 dxi = 1/Ni;
@@ -64,7 +64,7 @@ for t = 0:dt:1.5
         qn(n(j)+1) = qn(n(j)+1) +  w(j,1)*q(j);
     end
     % Compute potential at node
-    phi = get_phi(qn,l);
+    phi = get_phi(qn,l,dn);
     Phi = zeros(l,1);
     for i = 2: l-1
         Phi(i,1) = phi(i-1);
@@ -105,4 +105,4 @@ for t = 0:dt:1.5
     title(sprintf('t= %g',t));
     drawnow;
     
-end % Loop Ends
+end % Loop Ends 

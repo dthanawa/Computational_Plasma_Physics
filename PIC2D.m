@@ -1,6 +1,6 @@
 clear;
 clc;
-Ni = 6;
+Ni = 10;
 dtheta = 2*pi/Ni;
 for i = 1 : Ni
     xi(i)  = cos(i*dtheta);
@@ -9,7 +9,7 @@ for i = 1 : Ni
     Viy(i) = 0;
 end
 % No of e's
-Ne = 6;
+Ne = 10;
 dgamma = 2*pi/Ne;
 c = 0.1;
 % Defining Initial Location and velocity of e's
@@ -61,5 +61,6 @@ for p = 1 : N
     qn(i,j+1) = qn(i,j+1) + (1-hx)*(hy);
     qn(i+1,j+1) = qn(i+1,j+1) + (hx)*(hy);
 end
-phi = get_phi2D(qn,num_nodex,num_nodey)
+phi = get_phi2D(qn,num_nodex,num_nodey,dm,dn)
+[Ex,Ey] = get_field_pic2d(phi,num_nodex,num_nodey,dm,dn)
 
