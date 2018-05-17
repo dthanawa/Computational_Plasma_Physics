@@ -248,7 +248,7 @@ float interp_linear( float X[], float E[], float dn, int p, int N,float n[] )
         slope[i] = (E[i+1]-E[i])/dn;
     
     for(i = 0; i < N; i++)
-        Ex[i] = X[i]*slope[(int)(n[i]-1)];
+        Ex[i] = X[i]*slope[(int)(n[i]-1)] + E[(int)(n[i]-1)];
     return 0;
 }
 
