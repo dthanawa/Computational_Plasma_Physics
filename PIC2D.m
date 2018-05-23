@@ -1,6 +1,7 @@
 clear;
 clc;
-Ni = 10;
+Ni = 1;
+Ne = 1;
 dtheta = 2*pi/Ni;
 for i = 1 : Ni
     xi(i)  = cos(i*dtheta);
@@ -9,13 +10,13 @@ for i = 1 : Ni
     Viy(i) = 0;
 end
 % No of e's
-Ne = 10;
+
 dgamma = 2*pi/Ne;
 c = 0.1;
 % Defining Initial Location and velocity of e's
 for i =1 : Ne
-    xe(i)  = 1.0*cos(i*dgamma);
-    ye(i)  = 1.0*sin(i*dgamma);
+    xe(i)  = 1.02*cos(i*dgamma);
+    ye(i)  = 1.02*sin(i*dgamma);
     Vex(i) = -c*sin(i*dgamma);
     Vey(i) = c*cos(i*dgamma);
 end
@@ -26,7 +27,7 @@ mi = 1000;
 % Mass of e's
 me = 1; 
 % Time step
-dt = 0.005;
+dt = 0.001;
 % Merge location and velocity of ions and e's
 X  = [xi';xe'];
 Y  = [yi';ye'];
@@ -47,20 +48,48 @@ for i = 1 : num_nodex
         nodeY(i,j) = n(j);
     end
 end
+qi = (1/Ni)*ones(Ni,1);
+qe = (-1/Ne)*ones(Ne,1);
+% Merge the charge matrix
+q  = [qi;qe];
 qn = zeros(num_nodex,num_nodey);
+for t = 0:dt:15
 for p = 1 : N
     fi = 1 + X(p)/dn;
     %i = floor(fi)
-    i = floor((X(p) - ax)/(bx-ax)*(num_nodex-1)+1);
+    lx(p) = (X(p) - ax)/(bx-ax)*(num_nodex-1)+1;
+    i = floor(lx(p));
     hx = fi - i;
     fj = 1 + Y(p)/dm;
-    j = floor((Y(p) - ay)/(by-ay)*(num_nodey-1)+1);
+    ly(p) = (Y(p) - ay)/(by-ay)*(num_nodey-1)+1;
+    j = floor(ly(p));
     hy = fj - j;
-    qn(i,j) = qn(i,j) + (1-hx)*(1-hy);
-    qn(i+1,j) = qn(i+1,j) + (hx)*(1-hy);
-    qn(i,j+1) = qn(i,j+1) + (1-hx)*(hy);
-    qn(i+1,j+1) = qn(i+1,j+1) + (hx)*(hy);
+    qn(i,j) = qn(i,j) + (1-hx)*(1-hy)*q(p);
+    qn(i+1,j) = qn(i+1,j) + (hx)*(1-hy)*q(p);
+    qn(i,j+1) = qn(i,j+1) + (1-hx)*(hy)*q(p);
+    qn(i+1,j+1) = qn(i+1,j+1) + (hx)*(hy)*q(p);
+    s(p) = i;
+    r(p) = j;
 end
-phi = get_phi2D(qn,num_nodex,num_nodey,dm,dn)
-[Ex,Ey] = get_field_pic2d(phi,num_nodex,num_nodey,dm,dn)
-
+phi = get_phi2D(qn,num_nodex,num_nodey,dm,dn);
+[Exn,Eyn] = get_field_pic2d(phi,num_nodex,num_nodey,dm,dn);
+[Ex,Ey] = get_field_each_particle(s,r,X,Y,N,Exn,Eyn,lx,ly);
+%Updating Velocity
+[Vx,Vy] = get_velocity_pic_2d(q,Vx,Vy,Ex,Ey,mi,me,Ni,Ne,N,dt); 
+%Updating Location
+[X,Y] = get_location2d(X,Y,dt,Vx,Vy,N);
+% ax = ax - t;
+% bx = bx + t;
+% ay = ax - t;
+% by = bx + t;
+ figure(1)
+    X = mod(X,1.5);
+    Y = mod(Y,1.5);
+    plot(X(1:Ni),Y(1:Ni),'k+',X(Ni+1:N),Y(Ni+1:N),'k.')
+    axis([-2 2 -2 2])
+    
+    title(sprintf('t= %g',t));
+    
+    %    pause;
+    drawnow;
+end
