@@ -3,40 +3,41 @@
 #include<math.h>
 #include <time.h>
 #define PI (3.141592653589793)
-
+#define N (100)
+#define num_node (5)
 // define the user-defined functions
 // Electric Potential
-float get_phi(float qn[],int num_node);
+float get_phi(float qn[]);
 
 // Electric Field
-float get_field_pic(float phi[],int p ,float dn);
+float get_field_pic(float phi[],float dn);
 
 // Linear Interpolation 
-float interp_linear( float X[], float E[], float dn, int p, int N,float n[] );
+float interp_linear( float X[], float E[], float dn,float n[] );
 
 // Global variables
-float x['n']  = { 0.0 }, E['p']  = { 0.0 }, Ex['N'] = { 0.0 };
+float x[num_node-2]  = {{ 0.0} }, E[num_node]  = { {0.0} }, Ex[N] = { {0.0} };
 
 // Main Function
 int main()
 {
     // Initialization of variables
     // #of ions and electrons
-    int Ni = 8, Ne = 8, N;
-    N = Ni + Ne;
+    int Ni = 50, Ne = 50;// N;
+    //N = Ni + Ne;
 
     // #of nodes
-    int num_node = 5, p = 5;
+    //int num_node = 5; //p = 5;
 
     int i, j;    
     float t, a = 0.0, b = 1.0;
     float dxe, dxi, m = 1.0, node['p'] = { 0.0 }, k = 0.0, mi = 1000.0, me = 1.0;
     
     // Memory Preallocation for Velocity, postion, weight fraction, Charge density and Electric Potential
-    float xi['N'] = { 0.0 }, xe['N'] = { 0.0 }, vi['N'] = { 0.0 }, ve['N'] = { 0.0 };
-    float X['N'] = { 0.0 }, V['N'] = { 0.0 }, Vnew['N'] = { 0.0 }, Xnew['N'] = { 0.0 };
-    float hx['N'][2] = { 0.0 }, n['N'] = { 0.0 }, w['N'][2] = { 0.0 };
-    float q['N'] = { 0.0 },qn['p'] = { 0.0 }, phi['p'] = { 0.0 };
+    float xi[N] = { 0.0 }, xe[N] = { 0.0 }, vi[N] = { 0.0 }, ve[N] = { 0.0 };
+    float X[N] = { 0.0 }, V[N] = { 0.0 }, Vnew[N] = { 0.0 }, Xnew[N] = { 0.0 };
+    float hx[N][2] = { 0.0 }, n[N] = { 0.0 }, w[N][2] = { 0.0 };
+    float q[N] = { 0.0 },qn[num_node] = { 0.0 }, phi[num_node] = { 0.0 };
     
     // Time step
     float dt = 0.0005;
@@ -130,19 +131,19 @@ int main()
                 printf("qn = %.5f \n",qn[i]);
             
             // Calling Electric Potential Function
-            get_phi(qn ,num_node);
+            get_phi(qn);
             
             for(i=1;i<num_node-1;i++)
                 phi[i] = x[i-1];
     
             // Calling Electric Field Function
-            get_field_pic(phi,p,dn);
+            get_field_pic(phi,dn);
         
             for(i = 0;i < num_node; i++)
                 printf("phi = %.5f\t E = %.5f \n",phi[i],E[i]);
             
             // Calling Linear Interpolation Function
-            interp_linear( X, E, dn, p, N, n );
+            interp_linear( X, E, dn, n );
         
             for(i = 0; i < N; i++)
                 printf("Ex = %.5f \n",Ex[i]);
@@ -180,12 +181,12 @@ int main()
 }
 
 // Electric Potential Function
-float get_phi(float qn[],int num_node)
+float get_phi(float qn[])
 {
     int n, i, j;
     float e0 = 8.85;
     n = num_node-2;
-    float a['n']['n'] = { 0.0 }, f['n'] = { 0.0 }, alfa['n'] = { 0.0 }, bet['n'] = { 0.0 };
+    float a[num_node-2][num_node-2] = { 0.0 }, f[num_node-2] = { 0.0 }, alfa[num_node-2] = { 0.0 }, bet[num_node-2] = { 0.0 };
     a[0][0] = -2;
     a[0][1] = 1;
     f[0] = qn[1]/e0;
@@ -226,25 +227,25 @@ float get_phi(float qn[],int num_node)
     
     return 0;
 }
-float get_field_pic(float phi[],int p,float dn)
+float get_field_pic(float phi[],float dn)
 {
     int i;
 
     E[0]   = -( phi[1] - phi[0] )/dn;
-    E[p-1] = -( phi[p-1] - phi[p-2] )/dn;
+    E[num_node-1] = -( phi[num_node-1] - phi[num_node-2] )/dn;
 
-    for(i = 1; i < p-1; i++)
+    for(i = 1; i < num_node-1; i++)
         E[i] = - ( phi[i+1] - phi[i-1] ) / ( 2 * dn );
 
     return 0;
 }
 
-float interp_linear( float X[], float E[], float dn, int p, int N,float n[] )
+float interp_linear( float X[], float E[], float dn,float n[] )
 {
-    int k=p-1,i;
-    float slope['k'];
+    int i;
+    float slope[num_node-1];
 
-    for(i = 0; i < p-1; i++)
+    for(i = 0; i < num_node-1; i++)
         slope[i] = (E[i+1]-E[i])/dn;
     
     for(i = 0; i < N; i++)
