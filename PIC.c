@@ -3,7 +3,7 @@
 #include<math.h>
 #include <time.h>
 #define PI (3.141592653589793)
-
+#define N (16)
 // define the user-defined functions
 // Electric Potential
 float get_phi(float qn[],int num_node);
@@ -22,8 +22,8 @@ int main()
 {
     // Initialization of variables
     // #of ions and electrons
-    int Ni = 8, Ne = 8, N;
-    N = Ni + Ne;
+    int Ni = 8, Ne = 8;
+   // N = Ni + Ne;
 
     // #of nodes
     int num_node = 5, p = 5;
