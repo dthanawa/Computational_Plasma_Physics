@@ -26,14 +26,6 @@ int main()
     // #of ions and electrons
 
     int Ni = 50, Ne = 50;// N;
-    //N = Ni + Ne;
-
-    int Ni = 8, Ne = 8;
-   // N = Ni + Ne;
-
-    // #of nodes
-    //int num_node = 5; //p = 5;
-
     int i, j;    
     float t, a = 0.0, b = 1.0;
     float dxe, dxi, m = 1.0, node['p'] = { 0.0 }, k = 0.0, mi = 1000.0, me = 1.0;
