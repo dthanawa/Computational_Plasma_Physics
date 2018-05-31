@@ -17,15 +17,23 @@ double get_field_pic(double phi[],double dn);
 double interp_linear( double X[], double E[], double dn,double n[] );
 
 // Global variables
-double x*;
-double E*;
-double Ex*;
+double *x;
+double *E;
+double *Ex;
 int N = 100,num_node = 5;
-x = (double *)malloc((num_node-2) * sizeof(double));
-E = (double *)malloc(num_node * sizeof(double));
-Ex = (double *)malloc(N * sizeof(double));
-x[num_node-2]  = 0.0; E[num_node]  = 0.0; Ex[N] = 0.0;
-
+//x = (double *)malloc((num_node-2) * sizeof(double));
+//E = (double *)malloc(num_node * sizeof(double));
+//Ex = (double *)malloc(N * sizeof(double));
+//x[num_node-2]  = 0.0; E[num_node]  = 0.0; Ex[N] = 0.0;
+//E = malloc(sizeof(*E) * num_node);
+//Ex = malloc(sizeof(*Ex) * N);
+//x = malloc(sizeof(*x) * (num_node-2));
+double* E = 0; 
+double* Ex = 0;
+double* x = 0;
+//x[num_node-2]  = 0.0; 
+//E[num_node]  = 0.0;
+//Ex[N] = 0.0;
 // Main Function
 int main()
 {
@@ -35,7 +43,7 @@ int main()
     int Ni = 50, Ne = 50;// N;
     int i, j;    
     double t, a = 0.0, b = 1.0;
-    //double node*,xi*,xe*vi*,ve*,X*,V*,Vnew*,Xnew*,hx*,n*,w*,q*,qn*,phi*;
+    double *node,*xi,*xe,*vi,*ve,*X,*V,*Vnew,*Xnew,**hx,*n,**w,*q,*qn,*phi;
    
     node = (double *)malloc(num_node * sizeof(double));
     xi = (double *)malloc(N * sizeof(double));
@@ -46,20 +54,20 @@ int main()
     V = (double *)malloc(N * sizeof(double));
     Vnew = (double *)malloc(N * sizeof(double));
     Xnew = (double *)malloc(N * sizeof(double));
-    hx = (double *)malloc(N *2* sizeof(double));
+    hx = (double **)malloc(N * 2 * sizeof(double));
     n = (double *)malloc(N * sizeof(double));
-    w = (double *)malloc(N *2* sizeof(double));
+    w = (double **)malloc(N * 2 * sizeof(double));
     q = (double *)malloc(N * sizeof(double));
     qn = (double *)malloc(num_node * sizeof(double));
     phi = (double *)malloc(num_node * sizeof(double));
-    double dxe, dxi, m = 1.0, node[num_node] = 0.0, k = 0.0, mi = 1000.0, me = 1.0;
+    double dxe, dxi, m = 1.0, k = 0.0, mi = 1000.0, me = 1.0;
     
     // Memory Preallocation for Velocity, postion, weight fraction, Charge density and Electric Potential
     xi[N] = 0.0; xe[N] = 0.0; vi[N] = 0.0; ve[N] = 0.0;
     X[N] = 0.0; V[N] = 0.0; Vnew[N] = 0.0; Xnew[N] = 0.0;
     hx[N][2] = 0.0; n[N] = 0.0; w[N][2] = 0.0;
     q[N] = 0.0; qn[num_node] = 0.0; phi[num_node] = 0.0;
-    
+    node[num_node] = 0.0;
     // Time step
     double dt = 0.0005;
     
@@ -207,8 +215,8 @@ double get_phi(double qn[])
     int tn, i, j;
     double e0 = 8.85;
     tn = num_node-2;
-    double a*,f*,alfa*,bet*;
-    a = (double *)malloc((num_node-2) * sizeof(double));
+    double **a,*f,*alfa,*bet;
+    a = (double **)malloc((num_node-2) * sizeof(double));
     f = (double *)malloc((num_node-2) * sizeof(double));
     alfa = (double *)malloc((num_node-2) * sizeof(double));
     bet = (double *)malloc((num_node-2) * sizeof(double));
@@ -270,9 +278,9 @@ double get_field_pic(double phi[],double dn)
 double interp_linear( double X[], double E[], double dn,double n[] )
 {
     int i;
-    double slope*;
+    double *slope;
     slope = (double *)malloc((num_node-1) * sizeof(double));
-    double slope[num_node-1] = 0.0;
+     slope[num_node-1] = 0.0;
 
     for(i = 0; i < num_node-1; i++)
         slope[i] = (E[i+1]-E[i])/dn;
