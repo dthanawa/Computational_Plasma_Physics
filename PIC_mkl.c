@@ -1,3 +1,12 @@
+// Compiling the code
+// Debug mode:
+// icc -I${MKLROOT}/include -L${MKLROOT}/lib/intel64 -lmkl_intel_lp64 -lmkl_core -lmkl_sequential -lpthread -DMODE_DEBUG PIC_mkl.c -o PIC_mkl.exe -std=c99 -lm
+// Prod Mode:
+// icc -I${MKLROOT}/include -L${MKLROOT}/lib/intel64 -lmkl_intel_lp64 -lmkl_core -lmkl_sequential -lpthread -DMODE_PROD PIC_mkl.c -o PIC_mkl.exe -std=c99 -lm
+
+//Run the code:
+// ./PIC_mkl.exe
+
 #include <stdio.h>
 #include<stdlib.h>
 #include<math.h>
