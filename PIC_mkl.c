@@ -51,7 +51,7 @@ double E[N];
 double Ex[N]; 
 double bb[NN];
 
-int main()
+int main(int argc, char *argv[])
 {
   int i, j;
   double t, a1 = 0.0, b1 = 1.0;
@@ -246,6 +246,7 @@ int main()
   double dxe, dxi, m = 1.0, k = 0.0, mi = 1000.0, me = 1.0;
   
   double dt = 0.0005;
+  // double dt = 0.5;
   double r = 2;
   
   dxe = 2.0/Ne;
@@ -278,7 +279,7 @@ int main()
         X[i] = xi[i] + xe[i];
         V[i] = vi[i] + ve[i];
         #ifdef MODE_DEBUG
-        printf("X = %.15lf\t\t V = %.15lf\n",X[i],V[i]);
+        printf("X = % 017.15lf   V = % 017.15lf\n",X[i],V[i]);
         #endif
         }
 
@@ -295,8 +296,10 @@ int main()
     double dn = 1.0/(num_node-1.0);
 
     // Time Loop BEGINS
-    for(t = 0; t <= 1.5; t+=dt)
-        {
+    for(t = 0.0; t <= 1.5; t = t + dt) {
+
+      printf("t = %6.5lf\n",t);
+
         // Calculating hx and Weight fraction
         for(i = 0;i<N;i++)
           {
@@ -409,13 +412,10 @@ int main()
           V[i] = Vnew[i];
           }
 
-        printf("t = %.lf\n",t);
-
-        }
-  for(i = 0; i < N; i++)
-    {
-    printf("Xnew = %.15lf \n",Xnew[i]);
     }
+  for(i = 0; i < N; i++) {
+    printf("Xnew = %.15lf \n",Xnew[i]);
+  }
   // Free up the memory
   free(node);
   free(xi);
@@ -580,4 +580,3 @@ double interp_linear( double X[], double E[], double dn,double n[] )
       }
   return 0;
 }
-
